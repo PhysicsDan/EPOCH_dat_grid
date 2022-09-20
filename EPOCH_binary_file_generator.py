@@ -13,15 +13,25 @@ Also if you have a variation in number density then it is probably better to use
 
 - Daniel
 """
-def main():
+def __main__():
     # DEFINE YOUR GRID SHAPE HERE
     shape = (10,20) # ny and nx
     fname = 'particles'
     grid = np.logspace(22,25,200).reshape(shape)
-    epoch_dat(grid, filename = fname, shape=shape)
+    create_epoch_dat(grid, filename = fname, shape=shape)
     check_dat_file(fname, shape)
 
-def epoch_dat(initial_grid, filename = 'particles',shape=None):
+def create_epoch_dat(initial_grid, filename = 'particles',shape=None):
+    '''
+    Outputs a numpy array in the correct format for EPOCH
+
+            Parameters:
+                    initial_grid (np.array): 2d parameter grid
+                    filename (str): Name of output file
+                    shape (tuple): Shape of desired array (optional)
+            Returns:
+                    (str): 'SUCCESS'
+    '''
 
     if '.' in filename:
         filename = filename.split('.')[0]
@@ -29,14 +39,14 @@ def epoch_dat(initial_grid, filename = 'particles',shape=None):
     # just write out if file is ready
     if shape==None:
         with open(f"{filename}.dat", 'wb') as f:
-            initial_grid.tofile(f)
+            rotate90cw(initial_grid).tofile(f)
         print(f"Saved data to {filename}.dat")
         return 'SUCCESS'
     else:
         # resize and output if necessary
         data = resize(initial_grid, shape)
         with open(f"{filename}.dat", 'wb') as f:
-            data.tofile(f)
+            rotate90cw(initial_grid).tofile(f)
         print(f"Saved data to {filename}.dat")
         return 'SUCCESS'
 
@@ -44,7 +54,7 @@ def check_dat_file(filename, shape):
     d = np.fromfile(f'{filename}.dat', dtype='float64').reshape(shape)
     if d.size > 1000:
         d = d[::10,::10]
-    plt.imshow(rotate90cw(d))
+    plt.imshow(d)
     plt.savefig(f'{filename}.png')
     plt.show()
     print("This is the orientation EPOCH will see")
@@ -57,5 +67,5 @@ def rotate90cw(grid):
     return new_grid
 
 if __name__ == '__main__':
-    main()
+    __main__()
 
